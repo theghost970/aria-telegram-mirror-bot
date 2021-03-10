@@ -40,7 +40,7 @@ setEventCallback(eventRegex.commandsRegex.start, eventRegex.commandsRegexNoName.
   }
 });
 
-setEventCallback(eventRegex.commandsRegex.mirrorTar, eventRegex.commandsRegexNoName.mirrorTar, (msg, match) => {
+setEventCallback(eventRegex.commandsRegex.mirrortar, eventRegex.commandsRegexNoName.mirrortar, (msg, match) => {
   if (msgTools.isAuthorized(msg) < 0) {
     msgTools.sendUnauthorizedMessage(bot, msg);
   } else {
@@ -88,7 +88,7 @@ function mirror(msg: TelegramBot.Message, match: RegExpExecArray, isTar?: boolea
   }
 }
 
-setEventCallback(eventRegex.commandsRegex.mirrorStatus, eventRegex.commandsRegexNoName.mirrorStatus, (msg) => {
+setEventCallback(eventRegex.commandsRegex.mirrorstatus, eventRegex.commandsRegexNoName.mirrorstatus, (msg) => {
   if (msgTools.isAuthorized(msg) < 0) {
     msgTools.sendUnauthorizedMessage(bot, msg);
   } else {
@@ -110,7 +110,7 @@ setEventCallback(eventRegex.commandsRegex.list, eventRegex.commandsRegexNoName.l
   }
 });
 
-setEventCallback(eventRegex.commandsRegex.getFolder, eventRegex.commandsRegexNoName.getFolder, (msg) => {
+setEventCallback(eventRegex.commandsRegex.getfolder, eventRegex.commandsRegexNoName.getfolder, (msg) => {
   if (msgTools.isAuthorized(msg) < 0) {
     msgTools.sendUnauthorizedMessage(bot, msg);
   } else {
@@ -120,17 +120,17 @@ setEventCallback(eventRegex.commandsRegex.getFolder, eventRegex.commandsRegexNoN
   }
 });
 
-setEventCallback(eventRegex.commandsRegex.cancelMirror, eventRegex.commandsRegexNoName.cancelMirror, (msg) => {
+setEventCallback(eventRegex.commandsRegex.cancelmirror, eventRegex.commandsRegexNoName.cancelmirror, (msg) => {
   var authorizedCode = msgTools.isAuthorized(msg);
   if (msg.reply_to_message) {
     var dlDetails = dlManager.getDownloadByMsgId(msg.reply_to_message);
     if (dlDetails) {
       if (authorizedCode > -1 && authorizedCode < 3) {
-        cancelMirror(dlDetails, msg);
+        cancelmirror(dlDetails, msg);
       } else if (authorizedCode === 3) {
         msgTools.isAdmin(bot, msg, (e, res) => {
           if (res) {
-            cancelMirror(dlDetails, msg);
+            cancelmirror(dlDetails, msg);
           } else {
             msgTools.sendMessage(bot, msg, 'You do not have permission to do that.');
           }
@@ -147,7 +147,7 @@ setEventCallback(eventRegex.commandsRegex.cancelMirror, eventRegex.commandsRegex
   }
 });
 
-setEventCallback(eventRegex.commandsRegex.cancelAll, eventRegex.commandsRegexNoName.cancelAll, (msg) => {
+setEventCallback(eventRegex.commandsRegex.cancelall, eventRegex.commandsRegexNoName.cancelall, (msg) => {
   var authorizedCode = msgTools.isAuthorized(msg, true);
   if (authorizedCode === 0) {
     // One of SUDO_USERS. Cancel all downloads
@@ -186,7 +186,7 @@ setEventCallback(eventRegex.commandsRegex.cancelAll, eventRegex.commandsRegexNoN
 function cancelMultipleMirrors(msg: TelegramBot.Message): void {
   var count = 0;
   dlManager.forEachCancelledDl(dl => {
-    if (cancelMirror(dl)) {
+    if (cancelmirror(dl)) {
       count++;
     }
   });
@@ -215,7 +215,7 @@ function sendCancelledMessages(): void {
   });
 }
 
-function cancelMirror(dlDetails: details.DlVars, cancelMsg?: TelegramBot.Message): boolean {
+function cancelmirror(dlDetails: details.DlVars, cancelMsg?: TelegramBot.Message): boolean {
   if (dlDetails.isUploading) {
     if (cancelMsg) {
       msgTools.sendMessage(bot, cancelMsg, 'Upload in progress. Cannot cancel.');
@@ -261,7 +261,7 @@ function handleDisallowedFilename(dlDetails: details.DlVars, filename: string): 
     if (isAllowed === 0) {
       dlDetails.isDownloadAllowed = 0;
       if (!dlDetails.isUploading) {
-        cancelMirror(dlDetails);
+        cancelmirror(dlDetails);
       }
       return false;
     } else if (isAllowed === 1) {
@@ -383,14 +383,14 @@ function cleanupDownload(gid: string, message: string, url?: string, dlDetails?:
     dlDetails = dlManager.getDownloadByGid(gid);
   }
   if (dlDetails) {
-    var wasCancelAlled = false;
+    var wascancelalled = false;
     dlManager.forEachCancelledDl(dlDetails => {
       if (dlDetails.gid === gid) {
-        wasCancelAlled = true;
+        wascancelalled = true;
       }
     });
-    if (!wasCancelAlled) {
-      // If the dl was stopped with a cancelAll command, a message has already been sent to the chat.
+    if (!wascancelalled) {
+      // If the dl was stopped with a cancelall command, a message has already been sent to the chat.
       // Do not send another one.
       if (dlDetails.tgRepliedUsername) {
         message += `\ncc: ${dlDetails.tgRepliedUsername}`;
